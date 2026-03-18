@@ -13,7 +13,7 @@ VERSION=$(curl -fsSL https://api.github.com/repos/buildkite/agent/releases/lates
   | jq -r '.tag_name' | sed 's/^v//')
 
 curl -fsSL "https://github.com/buildkite/agent/releases/download/v$${VERSION}/buildkite-agent-linux-amd64-$${VERSION}.tar.gz" \
-  | tar xz -C /usr/local/bin buildkite-agent
+  | tar xz --strip-components=1 -C /usr/local/bin ./buildkite-agent
 
 # Create system user
 useradd -r -m -s /bin/bash buildkite-agent
