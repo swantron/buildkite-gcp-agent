@@ -12,7 +12,7 @@ curl -fsSL https://get.docker.com | sh
 VERSION=$(curl -fsSL https://api.github.com/repos/buildkite/agent/releases/latest \
   | jq -r '.tag_name' | sed 's/^v//')
 
-curl -fsSL "https://github.com/buildkite/agent/releases/download/v${VERSION}/buildkite-agent-linux-amd64-${VERSION}.tar.gz" \
+curl -fsSL "https://github.com/buildkite/agent/releases/download/v$${VERSION}/buildkite-agent-linux-amd64-$${VERSION}.tar.gz" \
   | tar xz -C /usr/local/bin buildkite-agent
 
 # Create system user
