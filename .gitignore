@@ -7,5 +7,9 @@
 # Actual tfvars contain secrets
 terraform.tfvars
 
+# Secrets
+buildkitetoken
+key.json
+
 # OS
 .DS_Store

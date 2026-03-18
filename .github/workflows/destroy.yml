@@ -1,0 +1,42 @@
+name: Terraform Destroy
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: 'Type "destroy" to confirm teardown of all infrastructure'
+        required: true
+
+env:
+  TF_VAR_buildkite_agent_token: ${{ secrets.BUILDKITE_AGENT_TOKEN }}
+
+jobs:
+  destroy:
+    name: Destroy
+    runs-on: ubuntu-latest
+    environment: destroy  # optional: add a GitHub environment with required reviewers for extra protection
+
+    steps:
+      - name: Validate confirmation
+        if: github.event.inputs.confirm != 'destroy'
+        run: |
+          echo "Confirmation input was '${{ github.event.inputs.confirm }}', expected 'destroy'. Aborting."
+          exit 1
+
+      - uses: actions/checkout@v4
+
+      - name: Authenticate to GCP
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
+
+      - name: Setup Terraform
+        uses: hashicorp/setup-terraform@v3
+        with:
+          terraform_version: "1.9.0"
+
+      - name: Terraform Init
+        run: terraform init
+
+      - name: Terraform Destroy
+        run: terraform destroy -auto-approve

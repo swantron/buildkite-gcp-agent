@@ -6,13 +6,13 @@ variable "project_id" {
 variable "region" {
   description = "GCP region (must be us-central1, us-west1, or us-east1 for free tier e2-micro)"
   type        = string
-  default     = "us-central1"
+  default     = "us-west1"
 }
 
 variable "zone" {
   description = "GCP zone"
   type        = string
-  default     = "us-central1-a"
+  default     = "us-west1-a"
 }
 
 variable "buildkite_agent_token" {

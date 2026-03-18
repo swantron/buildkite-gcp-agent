@@ -15,5 +15,5 @@ output "ssh_command" {
 
 output "agent_logs" {
   description = "Command to tail Buildkite agent logs on the instance"
-  value       = "gcloud compute ssh ${google_compute_instance.agent.name} --zone ${var.zone} --project ${var.project_id} --command 'journalctl -u buildkite-agent -f'"
+  value       = "gcloud compute ssh ${google_compute_instance.agent.name} --zone ${var.zone} --project ${var.project_id} -- 'journalctl -u buildkite-agent -f'"
 }
