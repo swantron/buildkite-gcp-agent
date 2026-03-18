@@ -23,8 +23,8 @@ resource "google_compute_instance" "agent" {
   tags = ["buildkite-agent"]
 
   labels = {
-    managed-by  = "terraform"
-    purpose     = "buildkite-agent"
+    managed-by = "terraform"
+    purpose    = "buildkite-agent"
   }
 
   boot_disk {
@@ -38,7 +38,7 @@ resource "google_compute_instance" "agent" {
 
   network_interface {
     network = "default"
-    access_config {}  # Ephemeral public IP — required for outbound internet access
+    access_config {} # Ephemeral public IP — required for outbound internet access
   }
 
   metadata = {
