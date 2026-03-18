@@ -8,6 +8,13 @@ apt-get install -y curl git jq
 # Install Docker
 curl -fsSL https://get.docker.com | sh
 
+# Install Go
+GO_VERSION=$(curl -fsSL https://go.dev/VERSION?m=text | head -1)
+curl -fsSL "https://dl.google.com/go/$${GO_VERSION}.linux-amd64.tar.gz" | tar xz -C /usr/local
+echo 'export PATH=$PATH:/usr/local/go/bin' >> /etc/profile.d/go.sh
+chmod +x /etc/profile.d/go.sh
+export PATH=$PATH:/usr/local/go/bin
+
 # Install Buildkite agent from GitHub releases (avoids apt repo GPG issues)
 VERSION=$(curl -fsSL https://api.github.com/repos/buildkite/agent/releases/latest \
   | jq -r '.tag_name' | sed 's/^v//')
@@ -42,6 +49,7 @@ Requires=docker.service
 [Service]
 Type=simple
 User=buildkite-agent
+Environment=PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/local/go/bin
 ExecStart=/usr/local/bin/buildkite-agent start --config /etc/buildkite-agent/buildkite-agent.cfg
 Restart=on-failure
 RestartSec=5
