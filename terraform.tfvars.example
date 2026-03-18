@@ -1,0 +1,8 @@
+project_id            = "your-gcp-project-id"
+region                = "us-central1"
+zone                  = "us-central1-a"
+buildkite_agent_token = "your-buildkite-agent-token"
+agent_name            = "buildkite-agent"
+
+# Restrict to your IP for tighter SSH access, or set to [] to disable
+ssh_source_ranges = ["0.0.0.0/0"]

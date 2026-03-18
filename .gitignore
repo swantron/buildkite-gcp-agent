@@ -1,0 +1,11 @@
+# Terraform state — never commit
+*.tfstate
+*.tfstate.backup
+.terraform/
+.terraform.lock.hcl
+
+# Actual tfvars contain secrets
+terraform.tfvars
+
+# OS
+.DS_Store
