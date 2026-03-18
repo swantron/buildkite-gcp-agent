@@ -7,7 +7,6 @@ apt-get install -y curl git jq
 
 # Install Docker (needed for most CI workloads)
 curl -fsSL https://get.docker.com | sh
-usermod -aG docker buildkite-agent
 
 # Install Buildkite agent
 curl -fsSL https://keys.openpgp.org/vks/v1/by-fingerprint/32A37959C2FA5C3C99EFBC32A79206BE3680ED38 \
@@ -18,6 +17,9 @@ echo "deb [signed-by=/usr/share/keyrings/buildkite-agent-archive-keyring.gpg] ht
 
 apt-get update -y
 apt-get install -y buildkite-agent
+
+# Add buildkite-agent user to docker group (user created by package install above)
+usermod -aG docker buildkite-agent
 
 # Configure agent token
 sed -i "s/xxx/${agent_token}/g" /etc/buildkite-agent/buildkite-agent.cfg

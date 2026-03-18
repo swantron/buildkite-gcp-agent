@@ -76,7 +76,7 @@ jobs:
       # On merge to main: plan then apply
       - name: Terraform Plan (pre-apply)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: terraform plan -no-color -out=tfplan
+        run: terraform plan -no-color -replace=google_compute_instance.agent -out=tfplan
 
       - name: Terraform Apply
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
