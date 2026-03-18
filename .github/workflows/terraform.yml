@@ -8,7 +8,7 @@ on:
 
 env:
   TF_VERSION: "1.9.0"
-  # Passes the secret directly to Terraform as a variable — never written to disk
+  TF_VAR_project_id: buildkite-infra-490603
   TF_VAR_buildkite_agent_token: ${{ secrets.BUILDKITE_AGENT_TOKEN }}
 
 jobs:
@@ -73,7 +73,11 @@ jobs:
         if: github.event_name == 'pull_request' && steps.plan.outcome == 'failure'
         run: exit 1
 
-      # On merge to main: apply
+      # On merge to main: plan then apply
+      - name: Terraform Plan (pre-apply)
+        if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+        run: terraform plan -no-color -out=tfplan
+
       - name: Terraform Apply
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-        run: terraform apply -auto-approve
+        run: terraform apply -auto-approve tfplan
