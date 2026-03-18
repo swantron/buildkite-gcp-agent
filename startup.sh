@@ -28,7 +28,7 @@ chown buildkite-agent:buildkite-agent /var/lib/buildkite-agent /var/log/buildkit
 # Write agent config
 cat > /etc/buildkite-agent/buildkite-agent.cfg <<EOF
 token="${agent_token}"
-tags="cloud=gcp,os=linux,arch=amd64"
+tags="queue=gcp,cloud=gcp,os=linux,arch=amd64"
 build-path="/var/lib/buildkite-agent/builds"
 EOF
 

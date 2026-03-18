@@ -49,11 +49,6 @@ resource "google_compute_instance" "agent" {
 
   # Allow the instance to stop/start without destroying (useful for cost management)
   allow_stopping_for_update = true
-
-  lifecycle {
-    # Changing the startup script doesn't require instance replacement
-    ignore_changes = [metadata]
-  }
 }
 
 # SSH access (optional — restrict ssh_source_ranges in tfvars to lock down)
