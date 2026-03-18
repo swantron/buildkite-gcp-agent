@@ -5,30 +5,53 @@ set -euo pipefail
 apt-get update -y
 apt-get install -y curl git jq
 
-# Install Docker (needed for most CI workloads)
+# Install Docker
 curl -fsSL https://get.docker.com | sh
 
-# Install Buildkite agent
-curl -fsSL https://packages.buildkite.com/buildkite/agent/gpgkey \
-  | gpg --dearmor -o /usr/share/keyrings/buildkite-agent-archive-keyring.gpg
+# Install Buildkite agent from GitHub releases (avoids apt repo GPG issues)
+VERSION=$(curl -fsSL https://api.github.com/repos/buildkite/agent/releases/latest \
+  | jq -r '.tag_name' | sed 's/^v//')
 
-echo "deb [signed-by=/usr/share/keyrings/buildkite-agent-archive-keyring.gpg] https://apt.buildkite.com/buildkite-agent stable main" \
-  | tee /etc/apt/sources.list.d/buildkite-agent.list
+curl -fsSL "https://github.com/buildkite/agent/releases/download/v${VERSION}/buildkite-agent-linux-amd64-${VERSION}.tar.gz" \
+  | tar xz -C /usr/local/bin buildkite-agent
 
-apt-get update -y
-apt-get install -y buildkite-agent
+# Create system user
+useradd -r -m -s /bin/bash buildkite-agent
 
-# Add buildkite-agent user to docker group (user created by package install above)
+# Add to docker group so agent can run Docker steps
 usermod -aG docker buildkite-agent
 
-# Configure agent token
-sed -i "s/xxx/${agent_token}/g" /etc/buildkite-agent/buildkite-agent.cfg
+# Create config and working directories
+mkdir -p /etc/buildkite-agent /var/lib/buildkite-agent /var/log/buildkite-agent
+chown buildkite-agent:buildkite-agent /var/lib/buildkite-agent /var/log/buildkite-agent
 
-# Set agent tags for pipeline targeting
-cat >> /etc/buildkite-agent/buildkite-agent.cfg <<EOF
+# Write agent config
+cat > /etc/buildkite-agent/buildkite-agent.cfg <<EOF
+token="${agent_token}"
 tags="cloud=gcp,os=linux,arch=amd64"
+build-path="/var/lib/buildkite-agent/builds"
 EOF
 
-# Enable and start
+# Write systemd unit
+cat > /etc/systemd/system/buildkite-agent.service <<EOF
+[Unit]
+Description=Buildkite Agent
+After=network.target docker.service
+Requires=docker.service
+
+[Service]
+Type=simple
+User=buildkite-agent
+ExecStart=/usr/local/bin/buildkite-agent start --config /etc/buildkite-agent/buildkite-agent.cfg
+Restart=on-failure
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload
 systemctl enable buildkite-agent
 systemctl start buildkite-agent
