@@ -9,7 +9,7 @@ apt-get install -y curl git jq
 curl -fsSL https://get.docker.com | sh
 
 # Install Buildkite agent
-curl -fsSL https://keys.openpgp.org/vks/v1/by-fingerprint/32A37959C2FA5C3C99EFBC32A79206BE3680ED38 \
+curl -fsSL https://packages.buildkite.com/buildkite/agent/gpgkey \
   | gpg --dearmor -o /usr/share/keyrings/buildkite-agent-archive-keyring.gpg
 
 echo "deb [signed-by=/usr/share/keyrings/buildkite-agent-archive-keyring.gpg] https://apt.buildkite.com/buildkite-agent stable main" \
