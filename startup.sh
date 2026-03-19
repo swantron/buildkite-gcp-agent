@@ -8,6 +8,10 @@ apt-get install -y curl git jq
 # Install Docker
 curl -fsSL https://get.docker.com | sh
 
+# Install Node.js 20
+curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
+apt-get install -y nodejs
+
 # Install Go
 GO_VERSION=$(curl -fsSL https://go.dev/VERSION?m=text | head -1)
 curl -fsSL "https://dl.google.com/go/$${GO_VERSION}.linux-amd64.tar.gz" | tar xz -C /usr/local
