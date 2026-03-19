@@ -12,6 +12,9 @@ curl -fsSL https://get.docker.com | sh
 curl -fsSL https://deb.nodesource.com/setup_20.x | bash -
 apt-get install -y nodejs
 
+# Install Yarn
+npm install -g yarn
+
 # Install Go
 GO_VERSION=$(curl -fsSL https://go.dev/VERSION?m=text | head -1)
 curl -fsSL "https://dl.google.com/go/$${GO_VERSION}.linux-amd64.tar.gz" | tar xz -C /usr/local
