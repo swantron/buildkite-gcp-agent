@@ -127,6 +127,70 @@ steps:
       cloud: gcp
 ```
 
+## Scaling up: spot instances
+
+The `e2-micro` free tier is enough for light workloads, but resource-constrained for heavier pipelines (large test suites, Docker builds, TypeScript compilation). The next step is a **spot (preemptible) VM** — same GCP infrastructure, ~80% cheaper than on-demand, and a significant jump in available hardware.
+
+### Why spot works well for CI agents
+
+CI agents are stateless and interruptible by design. A Buildkite agent that gets preempted simply disconnects; Buildkite automatically re-queues the job and the next available agent picks it up. There's no data loss and no manual intervention needed. This makes CI one of the best use cases for spot pricing.
+
+### Recommended spot configuration
+
+```hcl
+# In variables.tf, update the defaults:
+variable "machine_type" {
+  default = "e2-medium"   # 2 vCPU, 4GB RAM — comfortable for most CI workloads
+}
+```
+
+Add a `scheduling` block to the instance in `main.tf`:
+
+```hcl
+resource "google_compute_instance" "agent" {
+  # ... existing config ...
+
+  scheduling {
+    preemptible         = true
+    automatic_restart   = false   # required for preemptible instances
+    on_host_maintenance = "TERMINATE"
+    provisioning_model  = "SPOT"
+  }
+}
+```
+
+### Cost comparison (us-west1)
+
+| Instance | Type | vCPU | RAM | Monthly cost |
+|----------|------|------|-----|-------------|
+| `e2-micro` | Free tier | 1 shared | 1 GB | $0 |
+| `e2-micro` | On-demand | 1 shared | 1 GB | ~$6 |
+| `e2-medium` | On-demand | 2 shared | 4 GB | ~$27 |
+| `e2-medium` | Spot | 2 shared | 4 GB | ~$5 |
+| `e2-standard-4` | Spot | 4 | 16 GB | ~$15 |
+
+A spot `e2-medium` at ~$5/month is the recommended next step — 4x the RAM and 2x the CPU for less than a coffee.
+
+### Agent restart on preemption
+
+GCP sends a 30-second preemption notice before terminating a spot instance. To automatically re-provision after preemption, add a startup script that re-registers the agent on boot (already handled by this repo's `startup.sh`). You can also add a GCP instance group to auto-replace terminated spot instances:
+
+```hcl
+resource "google_compute_instance_group_manager" "agents" {
+  name = "buildkite-agents"
+  zone = var.zone
+
+  base_instance_name = "buildkite-agent"
+  target_size        = 1
+
+  version {
+    instance_template = google_compute_instance_template.agent.id
+  }
+}
+```
+
+This is the pattern used in production CI fleets — a managed instance group maintains the desired number of spot agents, automatically replacing any that are preempted.
+
 ## Teardown
 
 To destroy the instance:
