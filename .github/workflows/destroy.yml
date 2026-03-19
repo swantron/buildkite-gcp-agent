@@ -10,6 +10,7 @@ on:
 env:
   TF_VAR_project_id: buildkite-infra-490603
   TF_VAR_buildkite_agent_token: ${{ secrets.BUILDKITE_AGENT_TOKEN }}
+  TF_VAR_buildkite_ssh_private_key: ${{ secrets.BUILDKITE_SSH_PRIVATE_KEY }}
 
 jobs:
   destroy:

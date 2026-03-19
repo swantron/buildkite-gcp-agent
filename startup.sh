@@ -35,6 +35,23 @@ useradd -r -m -s /bin/bash buildkite-agent
 # Add to docker group so agent can run Docker steps
 usermod -aG docker buildkite-agent
 
+# Install SSH key so the agent can clone from GitHub without manual setup.
+# The key is injected from a GitHub secret via Terraform templatefile,
+# so reprovisioning the instance never requires manual key management.
+mkdir -p /home/buildkite-agent/.ssh
+chmod 700 /home/buildkite-agent/.ssh
+
+cat > /home/buildkite-agent/.ssh/id_ed25519 <<'SSHKEY'
+${ssh_private_key}
+SSHKEY
+
+chmod 600 /home/buildkite-agent/.ssh/id_ed25519
+chown -R buildkite-agent:buildkite-agent /home/buildkite-agent/.ssh
+
+# Pre-trust GitHub to prevent host key prompts blocking the first clone
+ssh-keyscan github.com >> /home/buildkite-agent/.ssh/known_hosts
+chown buildkite-agent:buildkite-agent /home/buildkite-agent/.ssh/known_hosts
+
 # Create config and working directories
 mkdir -p /etc/buildkite-agent /var/lib/buildkite-agent /var/log/buildkite-agent
 chown buildkite-agent:buildkite-agent /var/lib/buildkite-agent /var/log/buildkite-agent

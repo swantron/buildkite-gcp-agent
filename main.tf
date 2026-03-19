@@ -43,7 +43,8 @@ resource "google_compute_instance" "agent" {
 
   metadata = {
     startup-script = templatefile("${path.module}/startup.sh", {
-      agent_token = var.buildkite_agent_token
+      agent_token     = var.buildkite_agent_token
+      ssh_private_key = var.buildkite_ssh_private_key
     })
   }
 

@@ -27,6 +27,12 @@ variable "agent_name" {
   default     = "buildkite-agent"
 }
 
+variable "buildkite_ssh_private_key" {
+  description = "Private SSH key for the buildkite-agent user to clone from GitHub"
+  type        = string
+  sensitive   = true
+}
+
 variable "ssh_source_ranges" {
   description = "CIDR ranges allowed to SSH into the instance. Set to [] to disable SSH access."
   type        = list(string)
