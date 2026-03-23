@@ -27,6 +27,12 @@ variable "agent_name" {
   default     = "buildkite-agent"
 }
 
+variable "machine_type" {
+  description = "GCP machine type for the agent instance (e2-micro is free tier eligible in us-central1/us-west1/us-east1)"
+  type        = string
+  default     = "e2-micro"
+}
+
 variable "buildkite_ssh_private_key" {
   description = "Private SSH key for the buildkite-agent user to clone from GitHub"
   type        = string
@@ -36,5 +42,5 @@ variable "buildkite_ssh_private_key" {
 variable "ssh_source_ranges" {
   description = "CIDR ranges allowed to SSH into the instance. Set to [] to disable SSH access."
   type        = list(string)
-  default     = ["0.0.0.0/0"]
+  default     = []
 }

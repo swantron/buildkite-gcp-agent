@@ -17,7 +17,7 @@ provider "google" {
 # Free tier: e2-micro in us-central1/us-west1/us-east1
 resource "google_compute_instance" "agent" {
   name         = var.agent_name
-  machine_type = "e2-micro"
+  machine_type = var.machine_type
   zone         = var.zone
 
   tags = ["buildkite-agent"]

@@ -37,7 +37,7 @@ The bucket is the one piece of infrastructure created manually (a deliberate boo
 - `e2-micro` Compute Engine instance (Debian 12, 30GB standard disk) — free tier eligible in `us-west1`
 - Buildkite agent installed and registered via startup script
 - Docker installed for containerized build steps
-- Agent tags (`cloud=gcp,os=linux,arch=amd64`) for pipeline targeting
+- Agent tags (`queue=gcp,cloud=gcp,os=linux,arch=amd64`) for pipeline targeting
 - SSH firewall rule (restrict via `ssh_source_ranges` or disable entirely)
 
 ## One-time setup
@@ -99,6 +99,7 @@ In this repo → Settings → Secrets and variables → Actions, add:
 |--------|-------|
 | `GOOGLE_CREDENTIALS` | Full contents of `key.json` |
 | `BUILDKITE_AGENT_TOKEN` | From Buildkite UI → Agents → New Agent |
+| `BUILDKITE_SSH_PRIVATE_KEY` | Private SSH key for the agent to clone repos (e.g. `~/.ssh/id_ed25519`) |
 
 ### 4. Buildkite agent token
 
@@ -117,7 +118,7 @@ The plan-in-PR pattern means infrastructure changes go through code review befor
 
 ## Targeting this agent from pipelines
 
-The agent registers with `cloud=gcp,os=linux,arch=amd64`. Use these tags in `.buildkite/pipeline.yml` to route jobs to this agent:
+The agent registers with `queue=gcp,cloud=gcp,os=linux,arch=amd64`. Use these tags in `.buildkite/pipeline.yml` to route jobs to this agent:
 
 ```yaml
 steps:

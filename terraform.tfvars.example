@@ -1,8 +1,10 @@
-project_id            = "buildkite-infra-490603"
-region                = "us-west1"
-zone                  = "us-west1-a"
-buildkite_agent_token = "your-buildkite-agent-token"
-agent_name            = "buildkite-agent"
+project_id                 = "your-gcp-project-id"
+region                     = "us-west1"
+zone                       = "us-west1-a"
+buildkite_agent_token      = "your-buildkite-agent-token"
+buildkite_ssh_private_key  = "-----BEGIN OPENSSH PRIVATE KEY-----\n...\n-----END OPENSSH PRIVATE KEY-----"
+agent_name                 = "buildkite-agent"
+machine_type               = "e2-micro"
 
-# Restrict to your IP for tighter SSH access, or set to [] to disable
-ssh_source_ranges = ["0.0.0.0/0"]
+# Restrict to your IP for tighter SSH access, or leave as [] to disable SSH entirely
+ssh_source_ranges = []

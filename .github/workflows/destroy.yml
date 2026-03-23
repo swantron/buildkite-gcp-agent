@@ -8,6 +8,7 @@ on:
         required: true
 
 env:
+  TF_VERSION: "1.9.0"
   TF_VAR_project_id: buildkite-infra-490603
   TF_VAR_buildkite_agent_token: ${{ secrets.BUILDKITE_AGENT_TOKEN }}
   TF_VAR_buildkite_ssh_private_key: ${{ secrets.BUILDKITE_SSH_PRIVATE_KEY }}
@@ -35,7 +36,7 @@ jobs:
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v3
         with:
-          terraform_version: "1.9.0"
+          terraform_version: ${{ env.TF_VERSION }}
 
       - name: Terraform Init
         run: terraform init
