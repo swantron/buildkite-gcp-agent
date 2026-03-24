@@ -14,6 +14,14 @@ provider "google" {
   zone    = var.zone
 }
 
+# Replaced whenever startup.sh changes so the new script actually runs on boot.
+resource "terraform_data" "startup_script_hash" {
+  input = sha256(templatefile("${path.module}/startup.sh", {
+    agent_token     = var.buildkite_agent_token
+    ssh_private_key = var.buildkite_ssh_private_key
+  }))
+}
+
 # Free tier: e2-micro in us-central1/us-west1/us-east1
 resource "google_compute_instance" "agent" {
   name         = var.agent_name
@@ -50,6 +58,10 @@ resource "google_compute_instance" "agent" {
 
   # Allow the instance to stop/start without destroying (useful for cost management)
   allow_stopping_for_update = true
+
+  lifecycle {
+    replace_triggered_by = [terraform_data.startup_script_hash]
+  }
 }
 
 # SSH access (optional — restrict ssh_source_ranges in tfvars to lock down)
