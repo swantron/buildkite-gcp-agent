@@ -61,9 +61,9 @@ chown -R buildkite-agent:buildkite-agent /home/buildkite-agent/.ssh
 ssh-keyscan github.com >> /home/buildkite-agent/.ssh/known_hosts
 chown buildkite-agent:buildkite-agent /home/buildkite-agent/.ssh/known_hosts
 
-# Create config and working directories
-mkdir -p /etc/buildkite-agent /var/lib/buildkite-agent /var/log/buildkite-agent
-chown buildkite-agent:buildkite-agent /var/lib/buildkite-agent /var/log/buildkite-agent
+# Create config, working, and plugin cache directories
+mkdir -p /etc/buildkite-agent /var/lib/buildkite-agent /var/log/buildkite-agent /var/cache/buildkite-agent
+chown buildkite-agent:buildkite-agent /var/lib/buildkite-agent /var/log/buildkite-agent /var/cache/buildkite-agent
 
 # Write agent config
 cat > /etc/buildkite-agent/buildkite-agent.cfg <<EOF
@@ -82,6 +82,7 @@ Requires=docker.service
 [Service]
 Type=simple
 User=buildkite-agent
+Environment=BUILDKITE_PLUGIN_CACHE_SHARED_PATH=/var/cache/buildkite-agent
 ExecStart=/usr/local/bin/buildkite-agent start --config /etc/buildkite-agent/buildkite-agent.cfg
 Restart=on-failure
 RestartSec=5
