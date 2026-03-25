@@ -28,7 +28,8 @@ ln -sf /usr/local/go/bin/go /usr/local/bin/go
 ln -sf /usr/local/go/bin/gofmt /usr/local/bin/gofmt
 
 # Install common Go tools used by pipelines
-GOPATH=/root/go /usr/local/bin/go install gotest.tools/gotestsum@latest
+# HOME and GOCACHE must be set explicitly — GCP startup scripts run without HOME
+HOME=/root GOPATH=/root/go GOCACHE=/root/.cache/go /usr/local/bin/go install gotest.tools/gotestsum@latest
 ln -sf /root/go/bin/gotestsum /usr/local/bin/gotestsum
 
 # Install Buildkite agent from GitHub releases (avoids apt repo GPG issues)
