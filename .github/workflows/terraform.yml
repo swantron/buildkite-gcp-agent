@@ -18,6 +18,7 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+      id-token: write
       pull-requests: write  # needed to post plan output as PR comment
 
     steps:
@@ -26,8 +27,8 @@ jobs:
       - name: Authenticate to GCP
         uses: google-github-actions/auth@v3
         with:
-          credentials_json: ${{ secrets.GOOGLE_CREDENTIALS }}
-
+          workload_identity_provider: projects/157611949730/locations/global/workloadIdentityPools/github/providers/github-oidc
+          service_account: buildkite-tf@buildkite-infra-490603.iam.gserviceaccount.com
       - name: Setup Terraform
         uses: hashicorp/setup-terraform@v4
         with:
